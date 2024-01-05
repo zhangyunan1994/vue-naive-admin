@@ -4,7 +4,7 @@
     "$message": true,
     "$dialog": true,
     "$notification": true,
-    "$modal": true,
+    "globalStore": true,
     "defineOptions": true,
     "EffectScope": true,
     "computed": true,

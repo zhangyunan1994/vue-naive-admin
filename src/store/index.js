@@ -8,11 +8,13 @@
 
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import { useAuthStore } from './modules/auth'
 
 export function setupStore(app) {
   const pinia = createPinia()
   pinia.use(piniaPluginPersistedstate)
   app.use(pinia)
+  window.globalStore = useAuthStore()
 }
 
 export * from './modules'

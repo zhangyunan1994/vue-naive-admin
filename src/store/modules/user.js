@@ -8,7 +8,6 @@
 
 import { defineStore } from 'pinia'
 import api from '@/api'
-import { useAuthStore } from '@/store'
 
 export const useUserStore = defineStore('user', {
   state: () => ({
@@ -55,13 +54,7 @@ export const useUserStore = defineStore('user', {
         return Promise.reject(error)
       }
     },
-    async switchCurrentRole(roleCode) {
-      const { data } = await api.switchCurrentRole(roleCode)
-      const authStore = useAuthStore()
-      authStore.resetLoginState()
-      await nextTick()
-      authStore.setToken(data)
-    },
+
     resetUser() {
       this.$reset()
     },

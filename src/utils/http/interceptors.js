@@ -8,7 +8,6 @@
  **********************************/
 
 import { resolveResError } from './helpers'
-import { useAuthStore } from '@/store'
 
 export function setupInterceptors(axiosInstance) {
   function reqResolve(config) {
@@ -17,7 +16,7 @@ export function setupInterceptors(axiosInstance) {
       return config
     }
 
-    const { accessToken } = useAuthStore()
+    const accessToken = window.globalStore?.accessToken
     if (accessToken) {
       // token: Bearer + xxx
       config.headers.Authorization = 'Bearer ' + accessToken

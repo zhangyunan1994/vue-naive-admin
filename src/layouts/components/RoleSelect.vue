@@ -62,7 +62,7 @@ function open(options) {
 async function setCurrentRole() {
   try {
     okLoading.value = true
-    await userStore.switchCurrentRole(roleCode.value)
+    await authStore.switchCurrentRole(roleCode.value)
     okLoading.value = false
     $message.success('切换成功')
     modalRef.value?.handleOk()

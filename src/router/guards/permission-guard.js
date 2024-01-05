@@ -6,14 +6,12 @@
  * Copyright © 2023 Ronnie Zhang(大脸怪) | https://isme.top
  **********************************/
 
-import { useAuthStore } from '@/store'
 import api from '@/api'
 
 const WHITE_LIST = ['/login', '/404', '/role-select']
 export function createPermissionGuard(router) {
   router.beforeEach(async (to) => {
-    const authStore = useAuthStore()
-    const token = authStore.accessToken
+    const token = window.globalStore?.accessToken
 
     /** 没有token */
     if (!token) {

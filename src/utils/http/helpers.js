@@ -7,8 +7,6 @@
  * Copyright © 2023 Ronnie Zhang(大脸怪) | https://isme.top
  **********************************/
 
-import { useAuthStore } from '@/store'
-
 let isConfirming = false
 export function resolveResError(code, message) {
   switch (code) {
@@ -20,7 +18,7 @@ export function resolveResError(code, message) {
         type: 'info',
         content: '登录已过期，是否重新登录？',
         confirm() {
-          useAuthStore().logout()
+          window.globalStore?.logout()
           window.$message?.success('已退出登录')
           isConfirming = false
         },
@@ -38,7 +36,7 @@ export function resolveResError(code, message) {
         type: 'info',
         content: `${message}，是否重新登录？`,
         confirm() {
-          useAuthStore().logout()
+          window.globalStore?.logout()
           window.$message?.success('已退出登录')
           isConfirming = false
         },

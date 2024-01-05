@@ -9,6 +9,7 @@
 import { defineStore } from 'pinia'
 import { useUserStore, usePermissionStore, useTabStore } from '@/store'
 import { resetRouter, router } from '@/router'
+import api from '@/api'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -27,6 +28,12 @@ export const useAuthStore = defineStore('auth', {
         path: '/login',
         query: currentRoute.query,
       })
+    },
+    async switchCurrentRole(roleCode) {
+      const { data } = await api.switchCurrentRole(roleCode)
+      this.resetLoginState()
+      await nextTick()
+      this.setToken(data)
     },
     resetLoginState() {
       const { resetUser } = useUserStore()

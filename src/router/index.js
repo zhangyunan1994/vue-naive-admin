@@ -8,7 +8,7 @@
 
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import { setupRouterGuards } from './guards'
-import { useAuthStore, usePermissionStore, useUserStore } from '@/store'
+import { usePermissionStore, useUserStore } from '@/store'
 
 export const basicRoutes = [
   {
@@ -71,10 +71,9 @@ export async function setupRouter(app) {
 export async function initUserAndPermissions() {
   const permissionStore = usePermissionStore()
   const userStore = useUserStore()
-  const authStore = useAuthStore()
 
-  if (!authStore.accessToken) {
-    authStore.toLogin()
+  if (!window.globalStore?.accessToken) {
+    window.globalStore.toLogin()
     return
   }
   await Promise.all([userStore.getUserInfo(), permissionStore.initPermissions()])
