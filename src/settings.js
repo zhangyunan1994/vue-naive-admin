@@ -38,25 +38,25 @@ export const naiveThemeOverrides = {
 }
 
 export const basePermissions = [
-  {
-    code: 'ExternalLink',
-    name: '外链',
-    type: 'MENU',
-    icon: 'i-fe:external-link',
-    order: 98,
-    enable: true,
-    show: true,
-    children: [
-      {
-        code: 'MyBlog',
-        name: '博客-掘金',
-        type: 'MENU',
-        path: 'https://juejin.cn/user/1961184475483255',
-        icon: 'i-simple-icons:juejin',
-        order: 1,
-        enable: true,
-        show: true,
-      },
-    ],
-  },
+  // {
+  //   code: 'ExternalLink',
+  //   name: '外链',
+  //   type: 'MENU',
+  //   icon: 'i-fe:external-link',
+  //   order: 98,
+  //   enable: true,
+  //   show: true,
+  //   children: [
+  //     {
+  //       code: 'MyBlog',
+  //       name: '博客-掘金',
+  //       type: 'MENU',
+  //       path: 'https://juejin.cn/user/1961184475483255',
+  //       icon: 'i-simple-icons:juejin',
+  //       order: 1,
+  //       enable: true,
+  //       show: true,
+  //     },
+  //   ],
+  // },
 ]
