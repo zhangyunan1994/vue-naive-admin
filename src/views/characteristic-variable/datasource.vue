@@ -44,7 +44,7 @@
           <n-input v-model:value="formValue.name" placeholder="Input Name" />
         </n-form-item>
         <n-form-item label="类别" path="user.age">
-          <n-select v-model:value="formValue.type" :options="options" placeholder="Input Age" style="width: 150px;"/>
+          <n-select v-model:value="formValue.type" :options="options" placeholder="Input Age" style="width: 150px;" />
         </n-form-item>
         <n-form-item>
           <n-button>
@@ -73,27 +73,28 @@
       />
     </n-flex>
     <MeModal ref="$modal1">
-      <el-form label-position="right" label-width="150px" size="small" :model="datasourceConfig">
-        <el-form-item label="名称">
-          <el-input size="small" v-model="datasourceConfig.name" placeholder="一个名称，全局唯一，最好是英文"></el-input>
-        </el-form-item>
-        <el-form-item label="启用状态">
-          <el-switch size="small" v-model="datasourceConfig.activeStatusBool" active-color="#13ce66" inactive-color="#ff4949">
-          </el-switch>
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input size="small" v-model="datasourceConfig.description"></el-input>
-        </el-form-item>
+      <n-form label-placement="left" label-width="150px" size="small">
+        <n-form-item label="名称">
+          <n-input size="medium" v-model="datasourceConfig.name" placeholder="一个名称，全局唯一，最好是英文"></n-input>
+        </n-form-item>
+        <n-form-item label="启用状态">
+          <n-switch size="medium" v-model="datasourceConfig.activeStatusBool" active-color="#13ce66"
+                    inactive-color="#ff4949">
+          </n-switch>
+        </n-form-item>
+        <n-form-item label="描述">
+          <n-input size="medium" v-model="datasourceConfig.description"></n-input>
+        </n-form-item>
 
         <div v-show="datasourceConfig.type === 1">
-          <el-form-item label="最大空闲连接">
-            <el-input-number size="small" :min="0" :max="65535" v-model="httpExpansionConfig.maximumPoolSize"
-                             placeholder="最大空闲连接，建议在 1 - 100 "></el-input-number>
-          </el-form-item>
-          <el-form-item label="连接最大存活时间">
-            <el-input-number size="small" :min="0" :max="100000" v-model="httpExpansionConfig.keepAliveDuration"
-                             placeholder="连接最大存活时间，单位秒"></el-input-number>
-          </el-form-item>
+          <n-form-item label="最大空闲连接">
+            <n-input-number size="medium" :min="0" :max="65535" v-model:value="httpExpansionConfig.maximumPoolSize"
+                            placeholder="最大空闲连接，建议在 1 - 100 "></n-input-number>
+          </n-form-item>
+          <n-form-item label="连接最大存活时间">
+            <n-input-number size="medium" :min="0" :max="100000" v-model:value="httpExpansionConfig.keepAliveDuration"
+                            placeholder="连接最大存活时间，单位秒"></n-input-number>
+          </n-form-item>
         </div>
 
         <div v-show="datasourceConfig.type === 2">
@@ -151,7 +152,8 @@
           </el-form-item>
 
           <el-form-item label="minIdle">
-            <el-input-number v-model="redisExpansionConfig.minIdle" placeholder="最小空闲连接数量，正整数"></el-input-number>
+            <el-input-number v-model="redisExpansionConfig.minIdle"
+                             placeholder="最小空闲连接数量，正整数"></el-input-number>
           </el-form-item>
           <el-form-item label="maxIdle">
             <el-input-number v-model="redisExpansionConfig.maxIdle"
@@ -162,7 +164,8 @@
                              placeholder="最大连接数量，正整数，大于等于 maxIdle"></el-input-number>
           </el-form-item>
           <el-form-item label="maxWait">
-            <el-input-number v-model="redisExpansionConfig.maxWait" placeholder="获取连接的最大等待时间，正整数"></el-input-number>
+            <el-input-number v-model="redisExpansionConfig.maxWait"
+                             placeholder="获取连接的最大等待时间，正整数"></el-input-number>
           </el-form-item>
         </div>
 
@@ -202,7 +205,7 @@
         </div>
 
 
-      </el-form>
+      </n-form>
     </MeModal>
   </CommonBlockPage>
 </template>
@@ -213,24 +216,67 @@ import { sleep } from '@/utils'
 import { useModal } from '@/composables'
 import { CommonBlockPage } from '@/components/index.js'
 import { onMounted, reactive, ref, h } from 'vue'
-import { NTag, NButton, useMessage } from "naive-ui";
+import { NTag, NButton, useMessage } from 'naive-ui'
 
 
 const height = ref(500)
 
+const datasourceConfig = ref({
+  name: '',
+  type: 1,
+  expansionConfig: '',
+  activeStatusBool: true,
+  description: ''
+})
+
+const httpExpansionConfig = ref({
+  maximumPoolSize: 5,
+  keepAliveDuration: 300
+})
+const mysqlExpansionConfig = ref({
+  host: '',
+  port: 3306,
+  database: '',
+  username: '',
+  password: '',
+  minimumIdle: 5,
+  maximumPoolSize: 5
+})
+const redisExpansionConfig = ref({
+  host: '',
+  port: 3306,
+  database: 0,
+  password: '',
+  timeout: 2500,
+  minIdle: 0,
+  maxIdle: 8,
+  maxActive: 8,
+  maxWait: 300
+})
+const mongoDBExpansionConfig = ref({
+  host: '',
+  port: 27017,
+  database: '',
+  username: '',
+  password: '',
+  minSize: 0,
+  maxSize: 100,
+  maxWaitTimeMS: 120000
+})
+
 const options = [
   {
-    label: "HTTP",
-    value: 1,
+    label: 'HTTP',
+    value: 1
   },
   {
     label: 'MySQL',
     value: 2
   }]
 
-const formValue =  ref({
-    name: 'name',
-    type: 1
+const formValue = ref({
+  name: 'name',
+  type: 1
 })
 
 const pagination = reactive({
@@ -251,34 +297,33 @@ const pagination = reactive({
 
 const data = ref([{
   id: 1,
-  name: "sherry",
-  type: "HTTP",
+  name: 'sherry',
+  type: 'HTTP',
   status: 1,
   createTime: '2024-02-09 12:12:12',
-  updateTime: '2024-02-09 12:12:12',
+  updateTime: '2024-02-09 12:12:12'
 }, {
   id: 2,
-  name: "sherry1",
-  type: "MongoDB",
+  name: 'sherry1',
+  type: 'MongoDB',
   status: 1,
   createTime: '2024-02-09 12:12:12',
-  updateTime: '2024-02-09 12:12:12',
+  updateTime: '2024-02-09 12:12:12'
 }, {
   id: 3,
-  name: "sherry2",
-  type: "Redis",
+  name: 'sherry2',
+  type: 'Redis',
   status: 1,
   createTime: '2024-02-09 12:12:12',
-  updateTime: '2024-02-09 12:12:12',
+  updateTime: '2024-02-09 12:12:12'
 }])
-
 
 
 const columns = ref([
   {
     title: 'Id',
     key: 'id',
-    width: 50,
+    width: 50
   },
   {
     title: '名称',
@@ -289,25 +334,25 @@ const columns = ref([
   {
     title: '类型',
     key: 'type',
-    width: 100,
+    width: 100
   },
   {
     title: '状态',
-    key: 'status',
+    key: 'status'
   },
   {
     title: '创建时间',
-    key: 'createTime',
+    key: 'createTime'
   },
   {
     title: '更新时间',
-    key: 'updateTime',
+    key: 'updateTime'
   },
   {
     title: '操作',
     key: 'actions',
     width: 150,
-    render (row) {
+    render(row) {
       return [h(
         NButton,
         {
@@ -344,22 +389,25 @@ function openModal(title) {
       okLoading1.value = false
       $message.success('提交成功', { key: 'modal1' })
       return true // 默认关闭弹窗，返回false可让弹窗不关闭
-    },
+    }
   })
 }
 
 function showHttpDialog() {
-  openModal("HTTP")
+  openModal('HTTP')
 }
+
 function showMySQLDialog() {
-  openModal("MySQL")
+  openModal('MySQL')
 
 }
+
 function showRedisDialog() {
-  openModal("Redis")
+  openModal('Redis')
 
 }
+
 function showMongoDBDialog() {
-  openModal("MongoDB")
+  openModal('MongoDB')
 }
 </script>
