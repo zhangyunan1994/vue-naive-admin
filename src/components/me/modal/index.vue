@@ -11,6 +11,7 @@
     v-model:show="show"
     class="modal-box"
     :style="{ width: modalOptions.width, ...modalOptions.modalStyle }"
+    :mask-closable="false"
     :preset="undefined"
     size="huge"
     :bordered="false"
