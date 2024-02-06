@@ -1,24 +1,40 @@
 <template>
-  <CommonBlockPage>
+  <AppPage>
     <n-flex vertical>
       <n-row :gutter="10">
-        <n-col :span="6">
-          <div class="metric http" @click="showHttpDialog">
+        <n-col :span="4">
+          <div class="metric http bg-white dark:bg-black" @click="showHttpDialog">
             <p>
               <span class="number">HTTP</span>
-              <span class="title">HTTP 数据源</span>
+              <span class="title">&nbsp;</span>
             </p>
           </div>
         </n-col>
-        <n-col :span="6">
+        <n-col :span="4">
           <div class="metric mysql" @click="showMySQLDialog">
             <p>
-              <span class="number">MySQL</span>
-              <span class="title">MySQL 数据源</span>
+              <span class="number">&nbsp;</span>
+              <span class="title">&nbsp;</span>
             </p>
           </div>
         </n-col>
-        <n-col :span="6">
+        <n-col :span="4">
+          <div class="metric clickhouse" @click="showMySQLDialog">
+            <p>
+              <span class="number">&nbsp;</span>
+              <span class="title">&nbsp;</span>
+            </p>
+          </div>
+        </n-col>
+        <n-col :span="4">
+          <div class="metric elasticsearch" @click="showMySQLDialog">
+            <p>
+              <span class="number">&nbsp;</span>
+              <span class="title">&nbsp;</span>
+            </p>
+          </div>
+        </n-col>
+        <n-col :span="4">
           <div class="metric redis" @click="showRedisDialog">
             <p>
               <span class="number">&nbsp;</span>
@@ -26,7 +42,7 @@
             </p>
           </div>
         </n-col>
-        <n-col :span="6">
+        <n-col :span="4">
           <div class="metric mongodb" @click="showMongoDBDialog">
             <p>
               <span class="number">&nbsp;</span>
@@ -35,191 +51,207 @@
           </div>
         </n-col>
       </n-row>
-      <n-form
-        inline
-        label-placement="left"
-        :label-width="80"
-      >
-        <n-form-item label="名称" path="user.name">
-          <n-input v-model:value="formValue.name" placeholder="Input Name" />
-        </n-form-item>
-        <n-form-item label="类别" path="user.age">
-          <n-select v-model:value="formValue.type" :options="options" placeholder="Input Age" style="width: 150px;" />
-        </n-form-item>
-        <n-form-item>
-          <n-button>
-            查询
-          </n-button>
+      <n-card content-style="padding: 0;">
+        <form class="flex justify-between p-16">
+          <n-space wrap :size="[32, 16]">
+            <MeQueryItem label="类型" :labn-width="50">
+              <n-select v-model:value="formValue.type" :options="options" clearable />
+            </MeQueryItem>
+            <MeQueryItem label="名称" :labn-width="50">
+              <n-input
+                v-model:value="formValue.name"
+                type="text"
+                placeholder="请输入"
+                clearable
+              />
+            </MeQueryItem>
+          </n-space>
+          <div class="flex-shrink-0">
+            <n-button ghost type="primary">
+              <i class="i-fe:rotate-ccw mr-4" />
+              重置
+            </n-button>
+            <n-button attr-type="submit" class="ml-20" type="primary">
+              <i class="i-fe:search mr-4" />
+              搜索
+            </n-button>
+          </div>
+        </form>
+      </n-card>
 
-          <n-button>
-            重置
-          </n-button>
-        </n-form-item>
-      </n-form>
-      <n-data-table
-        :columns="columns"
-        :data="data"
-        :scroll-x="1800"
-        :style="{ height: `${height}px` }"
-        flex-height
-      />
-      <n-pagination
-        v-model:page="pagination.page"
-        :page-count="pagination.pageCount"
-        :on-update:page="pagination.onChange"
-        size="medium"
-        show-quick-jumper
-        show-size-picker
-      />
+      <n-card content-style="padding: 0;">
+        <n-flex vertical>
+          <n-data-table
+            :columns="columns"
+            :data="data"
+            :style="{minHeight: `500px`,  height: `calc(100vh - ${height}px)` }"
+            flex-height
+          />
+          <n-flex justify="end" class="pt-4 pr-16 pb-16">
+            <n-pagination
+              v-model:page="pagination.page"
+              :page-count="pagination.pageCount"
+              :on-update:page="pagination.onChange"
+              :page-size="pagination.pageSize"
+              :page-sizes="[10,20,30,50]"
+              size="medium"
+              show-quick-jumper
+              show-size-picker
+            />
+          </n-flex>
+        </n-flex>
+      </n-card>
     </n-flex>
+
     <MeModal ref="$modal1">
-      <n-form label-placement="left" label-width="150px" size="small">
+      <n-form label-placement="left" label-width="150px" :size="`small`">
         <n-form-item label="名称">
-          <n-input size="medium" v-model="datasourceConfig.name" placeholder="一个名称，全局唯一，最好是英文"></n-input>
+          <n-input v-model="datasourceConfig.name" placeholder="一个名称，全局唯一，最好是英文"></n-input>
         </n-form-item>
         <n-form-item label="启用状态">
-          <n-switch size="medium" v-model="datasourceConfig.activeStatusBool" active-color="#13ce66"
+          <n-switch v-model="datasourceConfig.activeStatusBool" active-color="#13ce66"
                     inactive-color="#ff4949">
           </n-switch>
         </n-form-item>
         <n-form-item label="描述">
-          <n-input size="medium" v-model="datasourceConfig.description"></n-input>
+          <n-input v-model="datasourceConfig.description"></n-input>
         </n-form-item>
 
         <div v-show="datasourceConfig.type === 1">
           <n-form-item label="最大空闲连接">
-            <n-input-number size="medium" :min="0" :max="65535" v-model:value="httpExpansionConfig.maximumPoolSize"
+            <n-input-number :min="0" :max="65535" v-model:value="httpExpansionConfig.maximumPoolSize"
                             placeholder="最大空闲连接，建议在 1 - 100 "></n-input-number>
           </n-form-item>
           <n-form-item label="连接最大存活时间">
-            <n-input-number size="medium" :min="0" :max="100000" v-model:value="httpExpansionConfig.keepAliveDuration"
+            <n-input-number :min="0" :max="100000" v-model:value="httpExpansionConfig.keepAliveDuration"
                             placeholder="连接最大存活时间，单位秒"></n-input-number>
           </n-form-item>
         </div>
 
         <div v-show="datasourceConfig.type === 2">
-          <el-form-item label="host">
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-input size="small" v-model="mysqlExpansionConfig.host" placeholder="MySQL host"></el-input>
-              </el-col>
-              <el-col :span="12">
-                <el-input-number size="small" :min="0" :max="65535" v-model="mysqlExpansionConfig.port"
-                                 placeholder="MySQL 端口号"></el-input-number>
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="database">
-            <el-input size="small" v-model="mysqlExpansionConfig.database" placeholder="MySQL database"></el-input>
-          </el-form-item>
-          <el-form-item label="username">
-            <el-input size="small" v-model="mysqlExpansionConfig.username" placeholder="MySQL username"></el-input>
-          </el-form-item>
-          <el-form-item label="password">
-            <el-input size="small" v-model="mysqlExpansionConfig.password" placeholder="MySQL password"></el-input>
-          </el-form-item>
-          <el-form-item label="minimumIdle">
-            <el-input-number size="small" :min="1" :max="100" v-model="mysqlExpansionConfig.minimumIdle"
-                             placeholder="最小空闲连接，建议在 1 - 100 "></el-input-number>
-          </el-form-item>
-          <el-form-item label="maximumPoolSize">
-            <el-input-number size="small" :min="1" :max="100" v-model="mysqlExpansionConfig.maximumPoolSize"
-                             placeholder="最大空闲连接，建议在 1 - 100 "></el-input-number>
-          </el-form-item>
+          <n-form-item label="host">
+            <n-row :gutter="20">
+              <n-col :span="12">
+                <n-input v-model:value="mysqlExpansionConfig.host" placeholder="MySQL host"></n-input>
+              </n-col>
+              <n-col :span="12">
+                <n-input-number :min="0" :max="65535" v-model:value="mysqlExpansionConfig.port"
+                                placeholder="MySQL 端口号"></n-input-number>
+              </n-col>
+            </n-row>
+          </n-form-item>
+          <n-form-item label="database">
+            <n-input v-model:value="mysqlExpansionConfig.database" placeholder="MySQL database"></n-input>
+          </n-form-item>
+          <n-form-item label="username">
+            <n-input v-model:value="mysqlExpansionConfig.username" placeholder="MySQL username"></n-input>
+          </n-form-item>
+          <n-form-item label="password">
+            <n-input v-model:value="mysqlExpansionConfig.password" placeholder="MySQL password"></n-input>
+          </n-form-item>
+          <n-form-item label="minimumIdle">
+            <n-input-number :min="1" :max="100" v-model:value="mysqlExpansionConfig.minimumIdle"
+                            placeholder="最小空闲连接，建议在 1 - 100 "></n-input-number>
+          </n-form-item>
+          <n-form-item label="maximumPoolSize">
+            <n-input-number :min="1" :max="100" v-model:value="mysqlExpansionConfig.maximumPoolSize"
+                            placeholder="最大空闲连接，建议在 1 - 100 "></n-input-number>
+          </n-form-item>
         </div>
 
         <div v-show="datasourceConfig.type === 3">
-          <el-form-item label="host">
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-input size="small" v-model="redisExpansionConfig.host" placeholder="Redis host"></el-input>
-              </el-col>
-              <el-col :span="12">
-                <el-input-number :min="0" :max="65535" v-model="redisExpansionConfig.port"
-                                 placeholder="Redis 端口号"></el-input-number>
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="database">
-            <el-input-number :min="0" :max="65535" v-model="redisExpansionConfig.database"
-                             placeholder="Redis database"></el-input-number>
-          </el-form-item>
-          <el-form-item label="password">
-            <el-input v-model="redisExpansionConfig.password" placeholder="Redis password"></el-input>
-          </el-form-item>
-          <el-form-item label="timeout">
-            <el-input-number v-model="redisExpansionConfig.timeout" placeholder="Redis 读写超时时间"></el-input-number>
-          </el-form-item>
+          <n-form-item label="host">
+            <n-row :gutter="20">
+              <n-col :span="12">
+                <n-input v-model="redisExpansionConfig.host" placeholder="Redis host"></n-input>
+              </n-col>
+              <n-col :span="12">
+                <n-input-number :min="0" :max="65535" v-model="redisExpansionConfig.port"
+                                placeholder="Redis 端口号"></n-input-number>
+              </n-col>
+            </n-row>
+          </n-form-item>
+          <n-form-item label="database">
+            <n-input-number :min="0" :max="65535" v-model="redisExpansionConfig.database"
+                            placeholder="Redis database"></n-input-number>
+          </n-form-item>
+          <n-form-item label="password">
+            <n-input v-model="redisExpansionConfig.password" placeholder="Redis password"></n-input>
+          </n-form-item>
+          <n-form-item label="timeout">
+            <n-input-number v-model="redisExpansionConfig.timeout" placeholder="Redis 读写超时时间"></n-input-number>
+          </n-form-item>
 
-          <el-form-item label="minIdle">
-            <el-input-number v-model="redisExpansionConfig.minIdle"
-                             placeholder="最小空闲连接数量，正整数"></el-input-number>
-          </el-form-item>
-          <el-form-item label="maxIdle">
-            <el-input-number v-model="redisExpansionConfig.maxIdle"
-                             placeholder="最大空闲连接数量，正整数，大于等于 minIdle"></el-input-number>
-          </el-form-item>
-          <el-form-item label="maxActive">
-            <el-input-number v-model="redisExpansionConfig.maxActive"
-                             placeholder="最大连接数量，正整数，大于等于 maxIdle"></el-input-number>
-          </el-form-item>
-          <el-form-item label="maxWait">
-            <el-input-number v-model="redisExpansionConfig.maxWait"
-                             placeholder="获取连接的最大等待时间，正整数"></el-input-number>
-          </el-form-item>
+          <n-form-item label="minIdle">
+            <n-input-number v-model="redisExpansionConfig.minIdle"
+                            placeholder="最小空闲连接数量，正整数"></n-input-number>
+          </n-form-item>
+          <n-form-item label="maxIdle">
+            <n-input-number v-model="redisExpansionConfig.maxIdle"
+                            placeholder="最大空闲连接数量，正整数，大于等于 minIdle"></n-input-number>
+          </n-form-item>
+          <n-form-item label="maxActive">
+            <n-input-number v-model="redisExpansionConfig.maxActive"
+                            placeholder="最大连接数量，正整数，大于等于 maxIdle"></n-input-number>
+          </n-form-item>
+          <n-form-item label="maxWait">
+            <n-input-number v-model="redisExpansionConfig.maxWait"
+                            placeholder="获取连接的最大等待时间，正整数"></n-input-number>
+          </n-form-item>
         </div>
 
-        <div v-show="datasourceConfig.type === 4">
-          <el-form-item label="host">
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <el-input v-model="mongoDBExpansionConfig.host" placeholder="MongoDB host"></el-input>
-              </el-col>
-              <el-col :span="12">
-                <el-input-number :min="0" :max="65535" v-model="mongoDBExpansionConfig.port"
-                                 placeholder="MongoDB 端口号"></el-input-number>
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="database">
-            <el-input v-model="mongoDBExpansionConfig.database" placeholder="MongoDB database"></el-input>
-          </el-form-item>
-          <el-form-item label="username">
-            <el-input v-model="mongoDBExpansionConfig.username" placeholder="MongoDB username"></el-input>
-          </el-form-item>
-          <el-form-item label="password">
-            <el-input v-model="mongoDBExpansionConfig.password" placeholder="MongoDB password"></el-input>
-          </el-form-item>
-          <el-form-item label="minSize">
-            <el-input-number :min="1" :max="100" v-model="mongoDBExpansionConfig.minSize"
-                             placeholder="最小空闲连接，建议在 1 - 100 "></el-input-number>
-          </el-form-item>
-          <el-form-item label="maxSize">
-            <el-input-number :min="1" :max="100" v-model="mongoDBExpansionConfig.maxSize"
-                             placeholder="最大空闲连接，建议在 1 - 100"></el-input-number>
-          </el-form-item>
-          <el-form-item label="timeout(毫秒)">
-            <el-input-number :min="-1" v-model="mongoDBExpansionConfig.maxWaitTimeMS"
-                             placeholder="MongoDB 获取连接时最大的等待时间（毫秒）"></el-input-number>
-          </el-form-item>
+        <div v-show="datasourceConfig.type === 6">
+          <n-form-item label="host">
+            <n-row :gutter="20">
+              <n-col :span="12">
+                <n-input v-model="mongoDBExpansionConfig.host" placeholder="MongoDB host"></n-input>
+              </n-col>
+              <n-col :span="12">
+                <n-input-number :min="0" :max="65535" v-model="mongoDBExpansionConfig.port"
+                                placeholder="MongoDB 端口号"></n-input-number>
+              </n-col>
+            </n-row>
+          </n-form-item>
+          <n-form-item label="database">
+            <n-input v-model="mongoDBExpansionConfig.database" placeholder="MongoDB database"></n-input>
+          </n-form-item>
+          <n-form-item label="username">
+            <n-input v-model="mongoDBExpansionConfig.username" placeholder="MongoDB username"></n-input>
+          </n-form-item>
+          <n-form-item label="password">
+            <n-input v-model="mongoDBExpansionConfig.password" placeholder="MongoDB password"></n-input>
+          </n-form-item>
+          <n-form-item label="minSize">
+            <n-input-number :min="1" :max="100" v-model="mongoDBExpansionConfig.minSize"
+                            placeholder="最小空闲连接，建议在 1 - 100 "></n-input-number>
+          </n-form-item>
+          <n-form-item label="maxSize">
+            <n-input-number :min="1" :max="100" v-model="mongoDBExpansionConfig.maxSize"
+                            placeholder="最大空闲连接，建议在 1 - 100"></n-input-number>
+          </n-form-item>
+          <n-form-item label="timeout(毫秒)">
+            <n-input-number :min="-1" v-model="mongoDBExpansionConfig.maxWaitTimeMS"
+                            placeholder="MongoDB 获取连接时最大的等待时间（毫秒）"></n-input-number>
+          </n-form-item>
         </div>
 
 
       </n-form>
     </MeModal>
-  </CommonBlockPage>
+  </AppPage>
 </template>
 
 <script setup>
-import { MeModal } from '@/components'
+import { MeCrud, MeModal, MeQueryItem } from '@/components'
 import { sleep } from '@/utils'
 import { useModal } from '@/composables'
 import { CommonBlockPage } from '@/components/index.js'
 import { onMounted, reactive, ref, h } from 'vue'
 import { NTag, NButton, useMessage } from 'naive-ui'
+import api from '@/views/pms/user/api.js'
 
 
-const height = ref(500)
+const height = ref(320)
 
 const datasourceConfig = ref({
   name: '',
@@ -272,20 +304,34 @@ const options = [
   {
     label: 'MySQL',
     value: 2
-  }]
+  },
+  {
+    label: 'ClickHouse',
+    value: 3
+  },
+  {
+    label: 'ElasticSearch',
+    value: 4
+  },
+  {
+    label: 'Redis',
+    value: 5
+  },
+  {
+    label: 'MongoDB',
+    value: 6
+  }
+]
 
 const formValue = ref({
-  name: 'name',
-  type: 1
+  name: '',
+  type: null
 })
 
 const pagination = reactive({
   page: 3,
   pageCount: 20,
-  pageSize: 10,
-  showSizePicker: true,
-  showQuickJumper: true,
-  pageSizes: [10, 20, 50],
+  pageSize: 50,
   onChange: (page) => {
     pagination.page = page
   },
@@ -295,28 +341,198 @@ const pagination = reactive({
   }
 })
 
-const data = ref([{
-  id: 1,
-  name: 'sherry',
-  type: 'HTTP',
-  status: 1,
-  createTime: '2024-02-09 12:12:12',
-  updateTime: '2024-02-09 12:12:12'
-}, {
-  id: 2,
-  name: 'sherry1',
-  type: 'MongoDB',
-  status: 1,
-  createTime: '2024-02-09 12:12:12',
-  updateTime: '2024-02-09 12:12:12'
-}, {
-  id: 3,
-  name: 'sherry2',
-  type: 'Redis',
-  status: 1,
-  createTime: '2024-02-09 12:12:12',
-  updateTime: '2024-02-09 12:12:12'
-}])
+const data = ref(
+  [
+    {
+      id: 1,
+      name: 'sherry',
+      type: 'HTTP',
+      status: 1,
+      createTime: '2024-02-09 12:12:12',
+      updateTime: '2024-02-09 12:12:12'
+    }, {
+    id: 2,
+    name: 'sherry1',
+    type: 'MongoDB',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 3,
+    name: 'sherry2',
+    type: 'Redis',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 1,
+    name: 'sherry',
+    type: 'HTTP',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 2,
+    name: 'sherry1',
+    type: 'MongoDB',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 3,
+    name: 'sherry2',
+    type: 'Redis',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 1,
+    name: 'sherry',
+    type: 'HTTP',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 2,
+    name: 'sherry1',
+    type: 'MongoDB',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 3,
+    name: 'sherry2',
+    type: 'Redis',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 1,
+    name: 'sherry',
+    type: 'HTTP',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 2,
+    name: 'sherry1',
+    type: 'MongoDB',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 3,
+    name: 'sherry2',
+    type: 'Redis',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 1,
+    name: 'sherry',
+    type: 'HTTP',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 2,
+    name: 'sherry1',
+    type: 'MongoDB',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 3,
+    name: 'sherry2',
+    type: 'Redis',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 1,
+    name: 'sherry',
+    type: 'HTTP',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 2,
+    name: 'sherry1',
+    type: 'MongoDB',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 3,
+    name: 'sherry2',
+    type: 'Redis',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 1,
+    name: 'sherry',
+    type: 'HTTP',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 2,
+    name: 'sherry1',
+    type: 'MongoDB',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 3,
+    name: 'sherry2',
+    type: 'Redis',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 1,
+    name: 'sherry',
+    type: 'HTTP',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 2,
+    name: 'sherry1',
+    type: 'MongoDB',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 3,
+    name: 'sherry2',
+    type: 'Redis',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 1,
+    name: 'sherry',
+    type: 'HTTP',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 2,
+    name: 'sherry1',
+    type: 'MongoDB',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }, {
+    id: 3,
+    name: 'sherry2',
+    type: 'Redis',
+    status: 1,
+    createTime: '2024-02-09 12:12:12',
+    updateTime: '2024-02-09 12:12:12'
+  }])
 
 
 const columns = ref([
@@ -342,11 +558,13 @@ const columns = ref([
   },
   {
     title: '创建时间',
-    key: 'createTime'
+    key: 'createTime',
+    width: 200
   },
   {
     title: '更新时间',
-    key: 'updateTime'
+    key: 'updateTime',
+    width: 200
   },
   {
     title: '操作',
@@ -394,20 +612,22 @@ function openModal(title) {
 }
 
 function showHttpDialog() {
+
   openModal('HTTP')
 }
 
 function showMySQLDialog() {
+  datasourceConfig.value.type = 2
   openModal('MySQL')
 
 }
 
 function showRedisDialog() {
   openModal('Redis')
-
 }
 
 function showMongoDBDialog() {
+  datasourceConfig.value.type = 6
   openModal('MongoDB')
 }
 </script>

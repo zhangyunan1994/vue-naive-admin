@@ -212,6 +212,16 @@
   background-size: cover;
 }
 
+.clickhouse {
+  background-image: url(../img/Clickhouse_logo.png);
+  background-size: cover;
+}
+
+.elasticsearch {
+  background-image: url(../img/elasticsearch-logo.png);
+  background-size: cover;
+}
+
 .mongodb {
   /*background: linear-gradient(to right bottom, rgba(121, 57, 57, 0.9),rgba(0,0,0,0)),url(../img/MongoDB.png) no-repeat center;*/
   background-image: url(../img/MongoDB.png);
@@ -219,18 +229,12 @@
 }
 
 .redis {
-  background-image: url(../img/Redis.png);
-  background-size: cover;
-}
-
-.bairong {
-  background-image: url(../img/Bairong.png);
-  background-repeat: repeat;
+  background-image: url(../img/Redis_logo.png);
   background-size: cover;
 }
 
 .http {
-  background-image: radial-gradient(73% 147%, #EADFDF 59%, #ECE2DF 100%), radial-gradient(91% 146%, rgba(255, 255, 255, 0.50) 47%, rgba(0, 0, 0, 0.50) 100%);
+  /*background-image: radial-gradient(73% 147%, #EADFDF 59%, #ECE2DF 100%), radial-gradient(91% 146%, rgba(255, 255, 255, 0.50) 47%, rgba(0, 0, 0, 0.50) 100%);*/
   background-blend-mode: screen;
   background-size: cover;
 }
