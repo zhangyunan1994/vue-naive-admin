@@ -103,71 +103,121 @@
       </n-card>
     </n-flex>
 
-    <MeModal ref="$modal1">
+    <MeModal ref="$modal1" :width="`1000px`">
       <n-form label-placement="left" label-width="150px" :size="`small`">
         <n-form-item label="名称">
-          <n-input v-model="datasourceConfig.name" placeholder="一个名称，全局唯一，最好是英文"></n-input>
+          <n-input v-model="fetcherConfig.name" placeholder="一个名称，全局唯一，最好是英文"></n-input>
         </n-form-item>
         <n-form-item label="启用状态">
-          <n-switch v-model="datasourceConfig.activeStatusBool" active-color="#13ce66"
-                    inactive-color="#ff4949">
-          </n-switch>
+          <n-switch v-model="fetcherConfig.activeStatus" active-color="#13ce66" inactive-color="#ff4949"></n-switch>
         </n-form-item>
         <n-form-item label="描述">
-          <n-input v-model="datasourceConfig.description"></n-input>
+          <n-input v-model="fetcherConfig.description"></n-input>
+        </n-form-item>
+        <n-form-item label="预计执行时间(毫秒)">
+          <n-input-number v-model:value="fetcherConfig.estimatedExecutionTime"></n-input-number>
         </n-form-item>
 
-        <div v-show="datasourceConfig.type === 1">
-          <n-form-item label="最大空闲连接">
-            <n-input-number :min="0" :max="65535" v-model:value="httpExpansionConfig.maximumPoolSize"
-                            placeholder="最大空闲连接，建议在 1 - 100 "></n-input-number>
-          </n-form-item>
-          <n-form-item label="连接最大存活时间">
-            <n-input-number :min="0" :max="100000" v-model:value="httpExpansionConfig.keepAliveDuration"
-                            placeholder="连接最大存活时间，单位秒"></n-input-number>
-          </n-form-item>
-          <n-form-item label="timeout(毫秒)">
-            <n-input-number :min="-1" v-model="httpExpansionConfig.maxWaitTimeMS"
-                            placeholder="等待时间（毫秒）"></n-input-number>
-          </n-form-item>
-        </div>
+        <n-form-item label="数据源">
+          <n-select v-model="fetcherConfig.datasource" placeholder="请选择" style="width: 100%" clearable>
+          </n-select>
+        </n-form-item>
 
-        <div v-show="datasourceConfig.type === 2">
-          <n-form-item label="host">
-            <n-row :gutter="20">
-              <n-col :span="12">
-                <n-input v-model:value="mysqlExpansionConfig.host" placeholder="MySQL host"></n-input>
+
+        <div v-show="fetcherConfig.type === 1">
+          <!-- http 操作 -->
+          <n-form-item label="url">
+            <n-input v-model="httpExpansionConfig.url" placeholder="http url（全路径）"></n-input>
+          </n-form-item>
+          <n-form-item label="method">
+            <n-select v-model="httpExpansionConfig.method" placeholder="请选择" :options="[{label: 'GET', value: 'GET'}, {label: 'POST', value: 'POST'}]" clearable>
+            </n-select>
+          </n-form-item>
+          <n-form-item label="headers">
+            <n-row v-for="(header, index) in httpExpansionConfig.headers">
+              <n-col class="line" :span="3">key : &nbsp;</n-col>
+              <n-col :span="7">
+                <n-input placeholder="header key" v-model="header.key" style="width: 100%;"></n-input>
               </n-col>
-              <n-col :span="12">
-                <n-input-number :min="0" :max="65535" v-model:value="mysqlExpansionConfig.port"
-                                placeholder="MySQL 端口号"></n-input-number>
+              <n-col class="line" :span="3">value : &nbsp;</n-col>
+              <n-col :span="7">
+                <n-input placeholder="header value" v-model="header.value" style="width: 100%;"></n-input>
+              </n-col>
+              <n-col :span="4">
+                &nbsp;
+                <n-button tertiary circle>
+                  <template #icon>
+                    <n-icon><i class="i-fe:plus" /></n-icon>
+                  </template>
+                </n-button>
+                <n-button type="primary" icon="n-icon-plus" circle @click="addHttpHeader(index)"></n-button>
+                <n-button type="danger" icon="n-icon-delete" circle @click="removeHttpHeader(index)"></n-button>
               </n-col>
             </n-row>
           </n-form-item>
-          <n-form-item label="database">
-            <n-input v-model:value="mysqlExpansionConfig.database" placeholder="MySQL database"></n-input>
-          </n-form-item>
-          <n-form-item label="username">
-            <n-input v-model:value="mysqlExpansionConfig.username" placeholder="MySQL username"></n-input>
-          </n-form-item>
-          <n-form-item label="password">
-            <n-input v-model:value="mysqlExpansionConfig.password" placeholder="MySQL password"></n-input>
-          </n-form-item>
-          <n-form-item label="minimumIdle">
-            <n-input-number :min="1" :max="100" v-model:value="mysqlExpansionConfig.minimumIdle"
-                            placeholder="最小空闲连接，建议在 1 - 100 "></n-input-number>
-          </n-form-item>
-          <n-form-item label="maximumPoolSize">
-            <n-input-number :min="1" :max="100" v-model:value="mysqlExpansionConfig.maximumPoolSize"
-                            placeholder="最大空闲连接，建议在 1 - 100 "></n-input-number>
-          </n-form-item>
-          <n-form-item label="timeout(毫秒)">
-            <n-input-number :min="-1" v-model="mysqlExpansionConfig.maxWaitTimeMS"
-                            placeholder="等待时间（毫秒）"></n-input-number>
+          <n-form-item label="http auth">
+            <n-row>
+              <n-col class="line" :span="3">username : &nbsp;</n-col>
+              <n-col :span="7">
+                <n-input placeholder="username" v-model="httpExpansionConfig.httpAuth.username"
+                          style="width: 100%;"></n-input>
+              </n-col>
+              <n-col class="line" :span="3">password : &nbsp;</n-col>
+              <n-col :span="7">
+                <n-input placeholder="password" v-model="httpExpansionConfig.httpAuth.password"
+                          style="width: 100%;"></n-input>
+              </n-col>
+            </n-row>
           </n-form-item>
         </div>
 
-        <div v-show="datasourceConfig.type === 3">
+        <div v-show="fetcherConfig.type === 2">
+          <n-form-item label="table">
+            <n-input v-model="mysqlExpansionConfig.table" placeholder="表名"></n-input>
+          </n-form-item>
+          <n-form-item label="查询字段">
+            <table class="mytable">
+              <tr>
+                <th>#</th>
+                <th>映射出变量名</th>
+                <th>数据库原始字段名</th>
+                <th>操作</th>
+              </tr>
+              <tr v-for="(item, index) in mysqlExpansionConfig.columnItems">
+                <td>{{ index }}</td>
+                <td>
+                  <n-input placeholder="数据库原始字段名" v-model="item.alias" style="width: 100%;"></n-input>
+                </td>
+                <td>
+                  <n-input placeholder="映射出变量名" v-model="item.column" style="width: 100%;"></n-input>
+                </td>
+                <td width="100px">
+                  <n-flex>
+                  <n-button type="primary" circle @click="addMySQLField(index)">
+                    <template #icon>
+                      <n-icon><i class="i-fe:plus" /></n-icon>
+                    </template>
+                  </n-button>
+                  <n-button type="error" icon="n-icon-delete" circle @click="removeMySQLField(index)">
+                    <template #icon>
+                      <n-icon><i class="i-fe:x-circle" /></n-icon>
+                    </template>
+                  </n-button>
+                  </n-flex>
+                </td>
+              </tr>
+            </table>
+          </n-form-item>
+          <n-form-item label="查询表达式">
+            <n-input v-model="mysqlExpansionConfig.condition" placeholder="where 条件表达式"></n-input>
+          </n-form-item>
+          <n-form-item label="查询数量（limit）">
+            <n-input-number v-model="mysqlExpansionConfig.limit" :min="-1" :max="65535"
+                             label="查询数量"></n-input-number>
+          </n-form-item>
+        </div>
+
+        <div v-show="fetcherConfig.type === 3">
           <n-form-item label="host">
             <n-row :gutter="20">
               <n-col :span="12">
@@ -202,7 +252,7 @@
           </n-form-item>
         </div>
 
-        <div v-show="datasourceConfig.type === 5">
+        <div v-show="fetcherConfig.type === 5">
           <n-form-item label="host">
             <n-row :gutter="20">
               <n-col :span="12">
@@ -243,7 +293,7 @@
           </n-form-item>
         </div>
 
-        <div v-show="datasourceConfig.type === 6">
+        <div v-show="fetcherConfig.type === 6">
           <n-form-item label="host">
             <n-row :gutter="20">
               <n-col :span="12">
@@ -296,26 +346,32 @@ import api from '@/views/pms/user/api.js'
 
 const height = ref(320)
 
-const datasourceConfig = ref({
+const fetcherConfig = ref({
   name: '',
   type: 1,
   expansionConfig: '',
-  activeStatusBool: true,
-  description: ''
+  activeStatus: true,
+  description: '',
+  datasource: null,
+  estimatedExecutionTime: -1
 })
 
 const httpExpansionConfig = ref({
-  maximumPoolSize: 5,
-  keepAliveDuration: 300
+  url: "",
+  method: "GET",
+  headers: [{}],
+  params: [{}],
+  data: [{}],
+  httpAuth: {
+    username: "",
+    password: ""
+  }
 })
 const mysqlExpansionConfig = ref({
-  host: '',
-  port: 3306,
-  database: '',
-  username: '',
-  password: '',
-  minimumIdle: 5,
-  maximumPoolSize: 5
+  table: "",
+  columnItems: [{}],
+  condition: "",
+  limit: -1,
 })
 const clickhouseExpansionConfig = ref({
   host: '',
@@ -475,7 +531,7 @@ const [$modal1, okLoading1] = useModal()
 function openModal(title) {
   $modal1.value?.open({
     title: title,
-    width: '600px',
+    width: '960px',
     okText: '确认',
     cancelText: '关闭',
     async onOk() {
@@ -490,33 +546,44 @@ function openModal(title) {
   })
 }
 
+function addMySQLField(index) {
+  mysqlExpansionConfig.value.columnItems.splice(index + 1, 0, {})
+}
+
+function removeMySQLField(index) {
+  mysqlExpansionConfig.value.columnItems.splice(index, 1)
+  if (mysqlExpansionConfig.value.columnItems.length === 0) {
+    mysqlExpansionConfig.value.columnItems.push({})
+  }
+}
+
 function showHttpDialog() {
-  datasourceConfig.value.type = 1
+  fetcherConfig.value.type = 1
   openModal('HTTP')
 }
 
 function showMySQLDialog() {
-  datasourceConfig.value.type = 2
+  fetcherConfig.value.type = 2
   openModal('MySQL')
 }
 
 function showClickHouseDialog() {
-  datasourceConfig.value.type = 3
+  fetcherConfig.value.type = 3
   openModal('ClickHouse')
 }
 
 function showElasticSearchDialog() {
-  datasourceConfig.value.type = 4
+  fetcherConfig.value.type = 4
   openModal('ElasticSearch')
 }
 
 function showRedisDialog() {
-  datasourceConfig.value.type = 5
+  fetcherConfig.value.type = 5
   openModal('Redis')
 }
 
 function showMongoDBDialog() {
-  datasourceConfig.value.type = 6
+  fetcherConfig.value.type = 6
   openModal('MongoDB')
 }
 </script>
