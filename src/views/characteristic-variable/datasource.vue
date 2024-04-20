@@ -103,7 +103,7 @@
       </n-card>
     </n-flex>
 
-    <MeModal ref="$modal1">
+    <MeModal ref="$modal1" :width="`800px`">
       <n-form label-placement="left" label-width="150px" :size="`small`">
         <n-form-item label="名称">
           <n-input v-model="datasourceConfig.name" placeholder="一个名称，全局唯一，最好是英文"></n-input>
@@ -144,14 +144,15 @@
               </n-col>
             </n-row>
           </n-form-item>
-          <n-form-item label="database">
-            <n-input v-model:value="mysqlExpansionConfig.database" placeholder="MySQL database"></n-input>
-          </n-form-item>
-          <n-form-item label="username">
+
+          <n-form-item label="用户名">
             <n-input v-model:value="mysqlExpansionConfig.username" placeholder="MySQL username"></n-input>
           </n-form-item>
-          <n-form-item label="password">
+          <n-form-item label="密码">
             <n-input v-model:value="mysqlExpansionConfig.password" placeholder="MySQL password"></n-input>
+          </n-form-item>
+          <n-form-item label="数据库">
+            <n-input v-model:value="mysqlExpansionConfig.database" placeholder="MySQL database"></n-input>
           </n-form-item>
           <n-form-item label="minimumIdle">
             <n-input-number :min="1" :max="100" v-model:value="mysqlExpansionConfig.minimumIdle"
