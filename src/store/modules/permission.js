@@ -6,6 +6,8 @@
  * Copyright © 2023 Ronnie Zhang(大脸怪) | https://isme.top
  **********************************/
 
+import { isExternal } from '@/utils'
+import { hyphenate } from '@vueuse/core'
 import { defineStore } from 'pinia'
 
 export const usePermissionStore = defineStore('permission', {
@@ -31,7 +33,8 @@ export const usePermissionStore = defineStore('permission', {
         label: route.meta.title,
         key: route.name,
         path: route.path,
-        icon: () => h('i', { class: `${route.meta.icon}?mask text-16` }),
+        originPath: route.meta.originPath,
+        icon: () => h('i', { class: `${route.meta.icon} text-14` }),
         order: item.order ?? 0,
       }
       const children = item.children?.filter((item) => item.type === 'MENU') || []
@@ -45,13 +48,20 @@ export const usePermissionStore = defineStore('permission', {
       return menuItem
     },
     generateRoute(item, parentKey) {
+      let originPath = undefined
+      if (isExternal(item.path)) {
+        originPath = item.path
+        item.component = '/src/views/iframe/index.vue'
+        item.path = `/iframe/${hyphenate(item.code)}`
+      }
       return {
         name: item.code,
         path: item.path,
         redirect: item.redirect,
         component: item.component,
         meta: {
-          icon: item.icon,
+          originPath,
+          icon: item.icon + '?mask',
           title: item.name,
           layout: item.layout,
           keepAlive: !!item.keepAlive,

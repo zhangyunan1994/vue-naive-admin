@@ -1,7 +1,7 @@
 <!--------------------------------
  - @Author: Ronnie Zhang
  - @LastEditor: Ronnie Zhang
- - @LastEditTime: 2023/12/05 21:29:38
+ - @LastEditTime: 2024/04/01 15:52:40
  - @Email: zclzone@outlook.com
  - Copyright © 2023 Ronnie Zhang(大脸怪) | https://isme.top
  --------------------------------->
@@ -67,11 +67,16 @@
           <n-input v-model:value="modalForm.code" :disabled="modalAction !== 'add'" />
         </n-form-item>
         <n-form-item label="权限" path="permissionIds">
-          <CascadeTree
-            v-model:value="modalForm.permissionIds"
-            :tree-data="permissionTree"
-            label-field="name"
+          <n-tree
             key-field="id"
+            label-field="name"
+            :selectable="false"
+            :data="permissionTree"
+            :checked-keys="modalForm.permissionIds"
+            :on-update:checked-keys="(keys) => (modalForm.permissionIds = keys)"
+            default-expand-all
+            checkable
+            check-on-click
             class="cus-scroll max-h-200 w-full"
           />
         </n-form-item>
@@ -91,7 +96,6 @@ import { NButton, NSwitch } from 'naive-ui'
 import { MeCrud, MeQueryItem, MeModal } from '@/components'
 import { useCrud } from '@/composables'
 import api from './api'
-import CascadeTree from './components/CascadeTree.vue'
 
 defineOptions({ name: 'RoleMgt' })
 

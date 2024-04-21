@@ -17,7 +17,7 @@
 
       <div class="w-320 flex-col px-20 py-32">
         <h2 class="f-c-c text-24 text-#6a6a6a font-normal">
-          <img src="@/assets/images/logo.png" height="50" class="mr-12" />
+          <img src="@/assets/images/logo.png" class="mr-12 h-50" />
           {{ title }}
         </h2>
         <n-input
@@ -105,7 +105,6 @@ import { throttle, lStorage } from '@/utils'
 import { useStorage } from '@vueuse/core'
 import api from './api'
 import { useAuthStore } from '@/store'
-import { initUserAndPermissions } from '@/router'
 
 const authStore = useAuthStore()
 const router = useRouter()
@@ -167,7 +166,6 @@ async function onLoginSuccess(data = {}) {
   authStore.setToken(data)
   $message.loading('登录中...', { key: 'login' })
   try {
-    await initUserAndPermissions()
     $message.success('登录成功', { key: 'login' })
     if (route.query.redirect) {
       const path = route.query.redirect

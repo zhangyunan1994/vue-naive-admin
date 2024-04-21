@@ -106,15 +106,15 @@
     <MeModal ref="$modal1" :width="`800px`">
       <n-form label-placement="left" label-width="150px" :size="`small`">
         <n-form-item label="名称">
-          <n-input v-model="datasourceConfig.name" placeholder="一个名称，全局唯一，最好是英文"></n-input>
+          <n-input v-model:value="datasourceConfig.name" placeholder="一个名称，全局唯一，最好是英文"></n-input>
         </n-form-item>
         <n-form-item label="启用状态">
-          <n-switch v-model="datasourceConfig.activeStatusBool" active-color="#13ce66"
+          <n-switch v-model:value="datasourceConfig.activeStatusBool" active-color="#13ce66"
                     inactive-color="#ff4949">
           </n-switch>
         </n-form-item>
         <n-form-item label="描述">
-          <n-input v-model="datasourceConfig.description"></n-input>
+          <n-input v-model:value="datasourceConfig.description"></n-input>
         </n-form-item>
 
         <div v-show="datasourceConfig.type === 1">
@@ -127,7 +127,7 @@
                             placeholder="连接最大存活时间，单位秒"></n-input-number>
           </n-form-item>
           <n-form-item label="timeout(毫秒)">
-            <n-input-number :min="-1" v-model="httpExpansionConfig.maxWaitTimeMS"
+            <n-input-number :min="-1" v-model:value="httpExpansionConfig.maxWaitTimeMS"
                             placeholder="等待时间（毫秒）"></n-input-number>
           </n-form-item>
         </div>
@@ -163,7 +163,7 @@
                             placeholder="最大空闲连接，建议在 1 - 100 "></n-input-number>
           </n-form-item>
           <n-form-item label="最大执行时间(毫秒)">
-            <n-input-number :min="-1" v-model="mysqlExpansionConfig.maxWaitTimeMS"
+            <n-input-number :min="-1" v-model:value="mysqlExpansionConfig.maxWaitTimeMS"
                             placeholder="等待时间（毫秒）"></n-input-number>
           </n-form-item>
         </div>
@@ -307,7 +307,8 @@ const datasourceConfig = ref({
 
 const httpExpansionConfig = ref({
   maximumPoolSize: 5,
-  keepAliveDuration: 300
+  keepAliveDuration: 300,
+  maxWaitTimeMS: 1000
 })
 const mysqlExpansionConfig = ref({
   host: '',
@@ -316,7 +317,8 @@ const mysqlExpansionConfig = ref({
   username: '',
   password: '',
   minimumIdle: 5,
-  maximumPoolSize: 5
+  maximumPoolSize: 5,
+  maxWaitTimeMS: 1000
 })
 const clickhouseExpansionConfig = ref({
   host: '',
