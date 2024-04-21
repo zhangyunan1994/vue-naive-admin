@@ -103,7 +103,7 @@
       </n-card>
     </n-flex>
 
-    <MeModal ref="$modal1">
+    <MeModal ref="$modal1" :width="`800px`">
       <n-form label-placement="left" label-width="150px" :size="`small`">
         <n-form-item label="名称">
           <n-input v-model="datasourceConfig.name" placeholder="一个名称，全局唯一，最好是英文"></n-input>
@@ -144,6 +144,7 @@
               </n-col>
             </n-row>
           </n-form-item>
+
           <n-form-item label="数据库">
             <n-input v-model:value="mysqlExpansionConfig.database" placeholder="MySQL database"></n-input>
           </n-form-item>

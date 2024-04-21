@@ -122,8 +122,6 @@
           <n-select v-model="fetcherConfig.datasource" placeholder="请选择" style="width: 100%" clearable>
           </n-select>
         </n-form-item>
-
-
         <div v-show="fetcherConfig.type === 1">
           <!-- http 操作 -->
           <n-form-item label="url">
@@ -214,6 +212,9 @@
           <n-form-item label="查询数量（limit）">
             <n-input-number v-model="mysqlExpansionConfig.limit" :min="-1" :max="65535"
                              label="查询数量"></n-input-number>
+          </n-form-item>
+          <n-form-item label="预计生成 SQL">
+            {{ mysqlExpansionConfig.limit }}
           </n-form-item>
         </div>
 
