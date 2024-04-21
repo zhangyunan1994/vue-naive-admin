@@ -144,24 +144,24 @@
               </n-col>
             </n-row>
           </n-form-item>
-          <n-form-item label="database">
+          <n-form-item label="数据库">
             <n-input v-model:value="mysqlExpansionConfig.database" placeholder="MySQL database"></n-input>
           </n-form-item>
-          <n-form-item label="username">
+          <n-form-item label="用户名">
             <n-input v-model:value="mysqlExpansionConfig.username" placeholder="MySQL username"></n-input>
           </n-form-item>
-          <n-form-item label="password">
+          <n-form-item label="密码">
             <n-input v-model:value="mysqlExpansionConfig.password" placeholder="MySQL password"></n-input>
           </n-form-item>
-          <n-form-item label="minimumIdle">
+          <n-form-item label="最小空闲数量">
             <n-input-number :min="1" :max="100" v-model:value="mysqlExpansionConfig.minimumIdle"
                             placeholder="最小空闲连接，建议在 1 - 100 "></n-input-number>
           </n-form-item>
-          <n-form-item label="maximumPoolSize">
+          <n-form-item label="最大连接池数量">
             <n-input-number :min="1" :max="100" v-model:value="mysqlExpansionConfig.maximumPoolSize"
                             placeholder="最大空闲连接，建议在 1 - 100 "></n-input-number>
           </n-form-item>
-          <n-form-item label="timeout(毫秒)">
+          <n-form-item label="最大执行时间(毫秒)">
             <n-input-number :min="-1" v-model="mysqlExpansionConfig.maxWaitTimeMS"
                             placeholder="等待时间（毫秒）"></n-input-number>
           </n-form-item>
