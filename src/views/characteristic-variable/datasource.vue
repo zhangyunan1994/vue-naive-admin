@@ -475,6 +475,19 @@ const columns = ref([
 
 const [$modal1, okLoading1] = useModal()
 
+function validateHttpConfig(httpExpansionConfig) {
+  if (httpExpansionConfig.maximumPoolSize < 0 || httpExpansionConfig.maximumPoolSize > 100) {
+    $message.error('最大空闲连接建议在 1 - 100 之间')
+    return false
+  }
+
+  if (httpExpansionConfig.keepAliveDuration < 0 || httpExpansionConfig.keepAliveDuration > 3000) {
+    $message.error('最大空闲连接建议在 1 - 3000 之间')
+    return false
+  }
+  return true
+}
+
 function openModal(title) {
   $modal1.value?.open({
     title: title,
@@ -482,6 +495,23 @@ function openModal(title) {
     okText: '确认',
     cancelText: '关闭',
     async onOk() {
+      // 校验逻辑
+      if (!!!datasourceConfig.value.name) {
+        $message.warning('名称不能为空')
+        return false
+      }
+      if (!!!datasourceConfig.value.description) {
+        $message.warning('描述不能为空')
+        return false
+      }
+
+      if (datasourceConfig.value.type === 1) {
+        console.info(httpExpansionConfig.value)
+        if (!validateHttpConfig(httpExpansionConfig.value)) {
+          return false
+        }
+      }
+
       $message.warning('请输入内容')
       okLoading1.value = true
       $message.loading('正在提交...', { key: 'modal1' })
@@ -493,8 +523,66 @@ function openModal(title) {
   })
 }
 
+function resetAllDatasourceConfig() {
+  httpExpansionConfig.value = {
+    maximumPoolSize: 5,
+    keepAliveDuration: 300,
+    maxWaitTimeMS: 1000
+  }
+  mysqlExpansionConfig.value = {
+    host: '',
+    port: 3306,
+    database: '',
+    username: '',
+    password: '',
+    minimumIdle: 5,
+    maximumPoolSize: 5,
+    maxWaitTimeMS: 1000
+  }
+  clickhouseExpansionConfig.value = {
+    host: '',
+    port: 8123,
+    database: '',
+    username: '',
+    password: '',
+    minimumIdle: 5,
+    maximumPoolSize: 5
+  }
+  elasticSearchExpansionConfig.value = {
+    host: '',
+    port: 3306,
+    database: '',
+    username: '',
+    password: '',
+    minimumIdle: 5,
+    maximumPoolSize: 5
+  }
+  redisExpansionConfig.value = {
+    host: '',
+    port: 3306,
+    database: 0,
+    password: '',
+    timeout: 2500,
+    minIdle: 0,
+    maxIdle: 8,
+    maxActive: 8,
+    maxWait: 300
+  }
+  mongoDBExpansionConfig.value = {
+    host: '',
+    port: 27017,
+    database: '',
+    username: '',
+    password: '',
+    minSize: 0,
+    maxSize: 100,
+    maxWaitTimeMS: 120000
+  }
+}
+
 function showHttpDialog() {
   datasourceConfig.value.type = 1
+  resetAllDatasourceConfig()
   openModal('HTTP')
 }
 
