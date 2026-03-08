@@ -7,5 +7,10 @@
  --------------------------------->
 
 <template>
+  <LayoutSetting />
   <slot />
 </template>
+
+<script setup lang="ts">
+import { LayoutSetting } from '@/components'
+</script>

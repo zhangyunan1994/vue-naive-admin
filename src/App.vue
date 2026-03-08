@@ -22,17 +22,13 @@
           </KeepAlive>
         </transition>
       </component>
-
-      <LayoutSetting v-if="layoutSettingVisible" class="fixed right-12 top-1/2 z-999" />
     </router-view>
   </n-config-provider>
 </template>
 
 <script setup>
 import { darkTheme, dateZhCN, zhCN } from 'naive-ui'
-import { LayoutSetting } from '@/components'
 import { useAppStore, useTabStore } from '@/store'
-import { layoutSettingVisible } from './settings'
 
 const layouts = new Map()
 function getLayout(name) {
@@ -51,6 +47,9 @@ if (appStore.layout === 'default')
 const Layout = computed(() => {
   if (!route.matched?.length)
     return null
+  if (route.meta?.layout === 'auto') {
+    return getLayout(appStore.layout)
+  }
   return getLayout(route.meta?.layout || appStore.layout)
 })
 

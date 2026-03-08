@@ -14,23 +14,16 @@
 
     <span class="mx-6 opacity-20">|</span>
 
-    <div class="flex flex-shrink-0 items-center px-12 text-18">
+    <div class="flex flex-shrink-0 items-center px-12 text-16">
       <BeginnerGuide />
 
       <ToggleTheme />
 
       <Fullscreen />
 
-      <i
-        class="i-fe:github mr-16 cursor-pointer"
-        @click="handleLinkClick('https://github.com/zclzone/vue-naive-admin/tree/2.x')"
-      />
-      <i
-        class="i-me:gitee mr-16 cursor-pointer"
-        @click="handleLinkClick('https://gitee.com/isme-admin/vue-naive-admin/tree/2.x')"
-      />
+      <LayoutSetting />
 
-      <ThemeSetting class="mr-16" />
+      <!--      <ThemeSetting class="mr-16" /> -->
 
       <UserAvatar />
     </div>
@@ -38,10 +31,6 @@
 </template>
 
 <script setup>
-import { ToggleTheme } from '@/components'
-import { AppTab, BeginnerGuide, Fullscreen, MenuCollapse, UserAvatar } from '@/layouts/components'
-
-function handleLinkClick(link) {
-  window.open(link)
-}
+import { LayoutSetting, ToggleTheme } from '@/components'
+import { AppTab, Fullscreen, MenuCollapse, UserAvatar } from '@/layouts/components'
 </script>

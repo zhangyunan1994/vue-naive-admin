@@ -9,20 +9,18 @@
 <template>
   <n-dropdown trigger="click" :options="options" @select="handleSelect">
     <div id="user-dropdown" class="flex cursor-pointer items-center">
-      <n-avatar round :size="36" :src="userStore.avatar" />
+      <NAvatar round :size="36" :src="userStore.avatar" />
       <div v-if="userStore.userInfo" class="ml-12 flex-col flex-shrink-0 items-center">
         <span class="text-14">{{ userStore.nickName ?? userStore.username }}</span>
-        <span class="text-12 opacity-50">[{{ userStore.currentRole?.name }}]</span>
+        <span class="text-12">{{ userStore.username }}</span>
       </div>
     </div>
   </n-dropdown>
-
-  <RoleSelect ref="roleSelectRef" />
 </template>
 
 <script setup>
+import { NAvatar, NText } from 'naive-ui'
 import api from '@/api'
-import { RoleSelect } from '@/layouts/components'
 import { useAuthStore, usePermissionStore, useUserStore } from '@/store'
 
 const router = useRouter()
@@ -30,7 +28,43 @@ const userStore = useUserStore()
 const authStore = useAuthStore()
 const permissionStore = usePermissionStore()
 
+function renderCustomHeader() {
+  return h(
+    'div',
+    {
+      style: 'display: flex; align-items: center; padding: 8px 12px;',
+    },
+    [
+      h(NAvatar, {
+        round: true,
+        style: 'margin-right: 12px;',
+        size: 48,
+        src: userStore.avatarUrl,
+      }),
+      h('div', null, [
+        h('div', null, [h(NText, { depth: 2 }, { default: () => userStore.nickName ?? userStore.username })]),
+        h('div', { style: 'font-size: 14px;' }, [
+          h(
+            NText,
+            { depth: 3 },
+            { default: () => '毫无疑问，你是办公室里最亮的星' },
+          ),
+        ]),
+      ]),
+    ],
+  )
+}
+
 const options = reactive([
+  {
+    key: 'header',
+    type: 'render',
+    render: renderCustomHeader,
+  },
+  {
+    key: 'header-divider',
+    type: 'divider',
+  },
   {
     label: '个人资料',
     key: 'profile',
@@ -38,10 +72,14 @@ const options = reactive([
     show: computed(() => permissionStore.accessRoutes?.some(item => item.path === '/profile')),
   },
   {
-    label: '切换角色',
-    key: 'toggleRole',
+    label: 'API Keys',
+    key: 'APIKeys',
     icon: () => h('i', { class: 'i-basil:exchange-solid text-14' }),
-    show: computed(() => userStore.roles.length > 1),
+    show: computed(() => permissionStore.accessRoutes?.some(item => item.path === '/openapi/apikey')),
+  },
+  {
+    key: 'header-divider',
+    type: 'divider',
   },
   {
     label: '退出登录',
@@ -50,18 +88,13 @@ const options = reactive([
   },
 ])
 
-const roleSelectRef = ref(null)
 function handleSelect(key) {
   switch (key) {
     case 'profile':
       router.push('/profile')
       break
-    case 'toggleRole':
-      roleSelectRef.value?.open({
-        onOk() {
-          location.reload()
-        },
-      })
+    case 'APIKeys':
+      router.push('/openapi/apikey')
       break
     case 'logout':
       $dialog.confirm({

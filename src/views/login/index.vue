@@ -94,7 +94,7 @@
 <script setup>
 import { useStorage } from '@vueuse/core'
 import { useAuthStore } from '@/store'
-import { lStorage, throttle } from '@/utils'
+import { lStorage, sha256, throttle } from '@/utils'
 import api from './api'
 
 const authStore = useAuthStore()
@@ -108,8 +108,10 @@ const loginInfo = ref({
 })
 
 const captchaUrl = ref('')
+const captchaKey = ref('')
 const initCaptcha = throttle(() => {
-  captchaUrl.value = `${import.meta.env.VITE_AXIOS_BASE_URL}/auth/captcha?${Date.now()}`
+  captchaKey.value = crypto.randomUUID()
+  captchaUrl.value = `${import.meta.env.VITE_AXIOS_BASE_URL}/auth/captcha?captchaKey=${captchaKey.value}`
 }, 500)
 
 const localLoginInfo = lStorage.get('loginInfo')
@@ -119,24 +121,20 @@ if (localLoginInfo) {
 }
 initCaptcha()
 
-function quickLogin() {
-  loginInfo.value.username = 'admin'
-  loginInfo.value.password = '123456'
-  handleLogin(true)
-}
-
 const isRemember = useStorage('isRemember', true)
 const loading = ref(false)
-async function handleLogin(isQuick) {
+async function handleLogin() {
   const { username, password, captcha } = loginInfo.value
   if (!username || !password)
     return $message.warning('请输入用户名和密码')
-  if (!isQuick && !captcha)
+  if (!captcha)
     return $message.warning('请输入验证码')
   try {
     loading.value = true
     $message.loading('正在验证，请稍后...', { key: 'login' })
-    const { data } = await api.login({ username, password: password.toString(), captcha, isQuick })
+    // 对密码进行 SHA-256 加密
+    const encryptedPassword = await sha256(password.toString())
+    const { data } = await api.login({ username, password: encryptedPassword, captcha, captchaKey: captchaKey.value })
     if (isRemember.value) {
       lStorage.set('loginInfo', { username, password })
     }

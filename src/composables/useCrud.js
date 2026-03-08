@@ -32,7 +32,7 @@ export function useCrud({ name, initForm = {}, doCreate, doDelete, doUpdate, ref
 
   /** 查看 */
   function handleView(row, title) {
-    handleOpen({ action: 'view', title, row })
+    handleOpen({ action: 'view', title, row, showOk: false })
   }
 
   /** 打开modal */

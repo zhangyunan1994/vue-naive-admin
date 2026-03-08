@@ -19,7 +19,9 @@
 
       <Fullscreen />
 
-      <ThemeSetting class="mr-16" />
+      <LayoutSetting />
+
+      <!--      <ThemeSetting class="mr-16" /> -->
 
       <UserAvatar />
     </div>
@@ -27,10 +29,6 @@
 </template>
 
 <script setup>
-import { ToggleTheme } from '@/components'
-import { BeginnerGuide, BreadCrumb, Fullscreen, MenuCollapse, UserAvatar } from '@/layouts/components'
-
-function handleLinkClick(link) {
-  window.open(link)
-}
+import { LayoutSetting, ToggleTheme } from '@/components'
+import { BreadCrumb, Fullscreen, MenuCollapse, UserAvatar } from '@/layouts/components'
 </script>

@@ -43,7 +43,7 @@ import { withModifiers } from 'vue'
 import api from '../api'
 import ResAddOrEdit from './ResAddOrEdit.vue'
 
-defineProps({
+const props = defineProps({
   treeData: {
     type: Array,
     default: () => [],
@@ -68,6 +68,9 @@ async function handleAdd(data = {}) {
 }
 
 function onSelect(keys, option, { action, node }) {
+  if (action === 'unselect' && props.currentMenu?.code === node.code) {
+    return
+  }
   emit('update:currentMenu', action === 'select' ? node : null)
 }
 

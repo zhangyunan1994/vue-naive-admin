@@ -78,7 +78,16 @@
           </template>
           <n-select v-model:value="modalForm.layout" :options="layoutOptions" clearable />
         </n-form-item-gi>
-        <n-form-item-gi v-if="modalForm.type === 'MENU'" :span="24" path="component">
+        <n-form-item-gi v-if="modalForm.path?.startsWith('http')" :span="24" path="externalLinkOpenWay">
+          <template #label>
+            <QuestionLabel
+              label="打开方式"
+              content="外链打开方式"
+            />
+          </template>
+          <n-select v-model:value="modalForm.externalLinkOpenWay" :options="externalLinkOpenWayOptions" clearable />
+        </n-form-item-gi>
+        <n-form-item-gi v-if="modalForm.type === 'MENU' && !modalForm.path?.startsWith('http')" :span="24" path="component">
           <template #label>
             <QuestionLabel
               label="组件路径"
@@ -184,19 +193,26 @@ const iconOptions = icons.map(item => ({
   value: item,
 }))
 const layoutOptions = [
-  { label: '跟随系统', value: '' },
+  { label: '跟随系统', value: 'auto' },
   { label: '简约-simple', value: 'simple' },
   { label: '通用-normal', value: 'normal' },
   { label: '全面-full', value: 'full' },
   { label: '空白-empty', value: 'empty' },
 ]
+
+const externalLinkOpenWayOptions = [
+  { label: '询问 - 外链总是询问打开方式', value: 'ask' },
+  { label: '在本站内嵌打开 - 在系统中直接打开', value: 'internal' },
+  { label: '新窗口 - 在新窗口打开外部链接', value: 'newWindow' },
+]
+
 const required = {
   required: true,
   message: '此为必填项',
   trigger: ['blur', 'change'],
 }
 
-const defaultForm = { enable: true, show: true, layout: '' }
+const defaultForm = { enable: true, show: true, layout: '', keepAlive: false, order: 0, externalLinkOpenWay: 'ask' }
 const [modalFormRef, modalForm, validation] = useForm()
 const [modalRef, okLoading] = useModal()
 

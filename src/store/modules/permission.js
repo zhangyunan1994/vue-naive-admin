@@ -34,6 +34,7 @@ export const usePermissionStore = defineStore('permission', {
         key: route.name,
         path: route.path,
         originPath: route.meta.originPath,
+        externalLinkOpenWay: route.meta.externalLinkOpenWay,
         icon: () => h('i', { class: `${route.meta.icon} text-16` }),
         order: item.order ?? 0,
       }
@@ -67,6 +68,7 @@ export const usePermissionStore = defineStore('permission', {
           icon: `${item.icon}?mask`,
           title: item.name,
           layout: item.layout,
+          externalLinkOpenWay: item.externalLinkOpenWay,
           keepAlive: !!item.keepAlive,
           parentKey,
           btns: item.children

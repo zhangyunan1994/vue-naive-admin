@@ -84,7 +84,7 @@
             },
           }"
         >
-          <n-input v-model:value="modalForm.password" type="password" show-password-on="mousedown" />
+          <n-input v-model:value="modalForm.password" type="password" :placeholder="modalAction === 'reset' ? '请输入新密码（8-16位，包含数字、大小写字母）' : '请输入初始密码（8-16位，包含数字、大小写字母）'" show-password-on="mousedown" />
         </n-form-item>
 
         <n-form-item v-if="['add', 'setRole'].includes(modalAction)" label="角色" path="roleIds">
@@ -121,7 +121,7 @@ import { NAvatar, NButton, NSwitch, NTag } from 'naive-ui'
 import { MeCrud, MeModal, MeQueryItem } from '@/components'
 import { useCrud } from '@/composables'
 import { withPermission } from '@/directives'
-import { formatDateTime } from '@/utils'
+import { formatDateTime, sha256, validatePassword } from '@/utils'
 import api from './api'
 
 defineOptions({ name: 'UserMgt' })
@@ -146,7 +146,7 @@ const {
   modalFormRef,
   modalForm,
   modalAction,
-  handleAdd,
+  handleAdd: _handleAdd,
   handleDelete,
   handleOpen,
   handleSave,
@@ -158,6 +158,16 @@ const {
   doUpdate: api.update,
   refresh: () => $table.value?.handleSearch(),
 })
+
+// 重写 handleAdd，确保创建用户时使用 onSave 进行密码加密
+function handleAdd() {
+  handleOpen({
+    action: 'add',
+    title: '创建新用户',
+    row: { enable: true },
+    onOk: onSave,
+  })
+}
 
 const columns = [
   {
@@ -314,7 +324,7 @@ function handleOpenRolesSet(row) {
   })
 }
 
-function onSave() {
+async function onSave() {
   if (modalAction.value === 'setRole') {
     return handleSave({
       api: () => api.update(modalForm.value),
@@ -322,9 +332,31 @@ function onSave() {
     })
   }
   else if (modalAction.value === 'reset') {
+    // 验证密码格式
+    const passwordValidation = validatePassword(modalForm.value.password)
+    if (!passwordValidation.valid) {
+      $message.error(passwordValidation.message)
+      return false
+    }
+    // 对密码进行 SHA-256 加密
+    const encryptedPassword = await sha256(modalForm.value.password.toString())
     return handleSave({
-      api: () => api.resetPwd(modalForm.value.id, modalForm.value),
+      api: () => api.resetPwd(modalForm.value.id, { ...modalForm.value, password: encryptedPassword }),
       cb: () => $message.success('密码重置成功'),
+    })
+  }
+  else if (modalAction.value === 'add') {
+    // 验证密码格式
+    const passwordValidation = validatePassword(modalForm.value.password)
+    if (!passwordValidation.valid) {
+      $message.error(passwordValidation.message)
+      return false
+    }
+    // 对密码进行 SHA-256 加密
+    const encryptedPassword = await sha256(modalForm.value.password.toString())
+    return handleSave({
+      api: () => api.create({ ...modalForm.value, password: encryptedPassword }),
+      cb: () => $message.success('新增成功'),
     })
   }
   handleSave()

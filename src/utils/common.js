@@ -104,3 +104,41 @@ export function useResize(el, cb) {
   observer.observe(el)
   return observer
 }
+
+/**
+ * 使用 SHA-256 算法加密字符串
+ * @param {string} text 待加密的文本
+ * @returns {Promise<string>} 加密后的十六进制字符串
+ */
+export async function sha256(text) {
+  const encoder = new TextEncoder()
+  const data = encoder.encode(text)
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+  return hashHex
+}
+
+/**
+ * 验证密码是否符合要求
+ * @param {string} password 待验证的密码
+ * @returns {{ valid: boolean, message: string }} 验证结果
+ */
+export function validatePassword(password) {
+  if (!password) {
+    return { valid: false, message: '密码不能为空' }
+  }
+  if (password.length < 8 || password.length > 16) {
+    return { valid: false, message: '密码长度必须在8-16位之间' }
+  }
+  if (!/\d/.test(password)) {
+    return { valid: false, message: '密码必须包含数字' }
+  }
+  if (!/[a-z]/.test(password)) {
+    return { valid: false, message: '密码必须包含小写字母' }
+  }
+  if (!/[A-Z]/.test(password)) {
+    return { valid: false, message: '密码必须包含大写字母' }
+  }
+  return { valid: true, message: '' }
+}

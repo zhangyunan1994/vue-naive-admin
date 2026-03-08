@@ -25,8 +25,14 @@ export const useUserStore = defineStore('user', {
     avatar() {
       return this.userInfo?.avatar
     },
-    currentRole() {
-      return this.userInfo?.currentRole || {}
+    avatarUrl() {
+      // 如果 avatar 不以 http 开头，则使用当前域名 + avatar
+      let avatar = this.userInfo?.avatar
+      if (avatar && !avatar.startsWith('http')) {
+        const baseURL = window.location.origin
+        avatar = `${baseURL}${avatar.startsWith('/') ? '' : '/'}${avatar}`
+      }
+      return avatar
     },
     roles() {
       return this.userInfo?.roles || []

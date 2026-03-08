@@ -18,6 +18,7 @@
         v-for="item in tabStore.tabs"
         :key="item.path"
         :name="item.path"
+        :closable="tabStore.tabs.length > 1 && item.path !== '/'"
         @click="handleItemClick(item.path)"
         @contextmenu.prevent="handleContextMenu($event, item)"
       >
@@ -78,7 +79,7 @@ async function handleContextMenu(e, tagItem) {
 :deep(.n-tabs) {
   .n-tabs-tab {
     padding-left: 16px;
-    height: 36px;
+    height: 34px;
     background: transparent !important;
     border-radius: 4px !important;
     margin-right: 4px;

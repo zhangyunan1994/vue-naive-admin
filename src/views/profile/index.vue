@@ -75,8 +75,23 @@
         <n-form-item label="原密码" path="oldPassword" :rule="required">
           <n-input v-model:value="pwdForm.oldPassword" type="password" placeholder="请输入原密码" show-password-on="mousedown" />
         </n-form-item>
-        <n-form-item label="新密码" path="newPassword" :rule="required">
-          <n-input v-model:value="pwdForm.newPassword" type="password" placeholder="请输入新密码" show-password-on="mousedown" />
+        <n-form-item
+          label="新密码"
+          path="newPassword"
+          :rule="{
+            required: true,
+            message: '请输入新密码',
+            trigger: ['input', 'blur'],
+            validator: (rule, value) => {
+              const result = validatePassword(value)
+              if (!result.valid) {
+                return new Error(result.message)
+              }
+              return true
+            },
+          }"
+        >
+          <n-input v-model:value="pwdForm.newPassword" type="password" placeholder="请输入新密码（8-16位，包含数字、大小写字母）" show-password-on="mousedown" />
         </n-form-item>
       </n-form>
     </MeModal>
@@ -109,6 +124,7 @@ import { MeModal } from '@/components'
 import { useForm, useModal } from '@/composables'
 import { useUserStore } from '@/store'
 import { getUserInfo } from '@/store/helper'
+import { sha256, validatePassword } from '@/utils'
 import api from './api'
 
 const userStore = useUserStore()
@@ -123,7 +139,19 @@ const [pwdFormRef, pwdForm, pwdValidation] = useForm()
 
 async function handlePwdSave() {
   await pwdValidation()
-  await api.changePassword(pwdForm.value)
+  // 验证新密码格式
+  const passwordValidation = validatePassword(pwdForm.value.newPassword)
+  if (!passwordValidation.valid) {
+    $message.error(passwordValidation.message)
+    return false
+  }
+  // 对密码进行 SHA-256 加密
+  const encryptedOldPassword = await sha256(pwdForm.value.oldPassword.toString())
+  const encryptedNewPassword = await sha256(pwdForm.value.newPassword.toString())
+  await api.changePassword({
+    oldPassword: encryptedOldPassword,
+    newPassword: encryptedNewPassword,
+  })
   $message.success('密码修改成功')
   refreshUserInfo()
 }

@@ -70,6 +70,7 @@
 import { NAvatar, NButton, NSwitch, NTag } from 'naive-ui'
 import { h } from 'vue'
 import { MeCrud, MeQueryItem } from '@/components'
+import { CommonPage } from '@/components/index.js'
 import { formatDateTime } from '@/utils'
 import api from './api'
 
