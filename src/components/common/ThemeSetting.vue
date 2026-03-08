@@ -23,4 +23,5 @@ import { useAppStore } from '@/store'
 const appStore = useAppStore()
 
 const primaryColors = Object.entries(getPresetColors()).map(([, value]) => value.primary)
+primaryColors.push('#326C72')
 </script>

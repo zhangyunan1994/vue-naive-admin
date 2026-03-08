@@ -75,6 +75,13 @@
             required: true,
             message: '请输入密码',
             trigger: ['input', 'blur'],
+            validator: (rule, value) => {
+              const result = validatePassword(value)
+              if (!result.valid) {
+                return new Error(result.message)
+              }
+              return true
+            },
           }"
         >
           <n-input v-model:value="modalForm.password" type="password" show-password-on="mousedown" />

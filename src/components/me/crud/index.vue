@@ -8,8 +8,8 @@
 
 <template>
   <div class="h-full flex flex-col overflow-hidden">
-    <AppCard v-if="$slots.default" bordered bg="#fafafc dark:black" class="mb-30 min-h-60 rounded-4">
-      <form class="flex justify-between p-16" @submit.prevent="handleSearch()">
+    <AppCard v-if="$slots.default" bordered bg="#fafafc dark:black" class="mb-20 min-h-50 rounded-4">
+      <form class="flex justify-between p-10" @submit.prevent="handleSearch()">
         <n-scrollbar x-scrollable>
           <n-space :wrap="!expand || isExpanded" :size="[32, 16]" class="p-10">
             <slot />
@@ -51,6 +51,7 @@
       class="flex-1"
       @update:checked-row-keys="onChecked"
       @update:page="onPageChange"
+      @update:page-size="onPageSizeChange"
     />
   </div>
 </template>
@@ -116,7 +117,9 @@ const initQuery = { ...props.queryItems }
 const tableData = ref([])
 const pagination = reactive({
   page: 1,
-  pageSize: 10,
+  pageSize: 20,
+  showSizePicker: true,
+  pageSizes: [10, 20, 30, 50, 100],
   prefix({ itemCount }) {
     return `共 ${itemCount} 条数据`
   },
@@ -179,6 +182,13 @@ async function handleReset() {
 }
 function onPageChange(currentPage) {
   pagination.page = currentPage
+  if (props.remote) {
+    handleQuery()
+  }
+}
+function onPageSizeChange(pageSize) {
+  pagination.pageSize = pageSize
+  pagination.page = 1
   if (props.remote) {
     handleQuery()
   }

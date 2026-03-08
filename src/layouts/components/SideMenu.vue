@@ -39,7 +39,7 @@ watch(route, async () => {
 })
 
 function handleMenuSelect(key, item) {
-  if (isExternal(item.originPath)) {
+  if (isExternal(item.originPath) && item.externalLinkOpenWay !== 'internal') {
     $dialog.confirm({
       type: 'info',
       title: `请选择打开方式`,

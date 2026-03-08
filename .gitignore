@@ -1,4 +1,8 @@
 *.local
 node_modules
 dist
+dist.zip
 stats.html
+.idea
+.DS_Store
+

@@ -17,7 +17,7 @@
     </aside>
 
     <article class="w-0 flex-col flex-1">
-      <AppHeader class="h-60 flex-shrink-0" />
+      <AppHeader class="h-46 flex-shrink-0" />
       <slot />
     </article>
   </div>

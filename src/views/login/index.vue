@@ -78,15 +78,6 @@
           <n-button
             class="h-40 flex-1 rounded-5 text-16"
             type="primary"
-            ghost
-            @click="quickLogin()"
-          >
-            一键体验
-          </n-button>
-
-          <n-button
-            class="ml-32 h-40 flex-1 rounded-5 text-16"
-            type="primary"
             :loading="loading"
             @click="handleLogin()"
           >
