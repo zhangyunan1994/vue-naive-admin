@@ -67,6 +67,12 @@ export default defineConfig(({ mode }) => {
             })
           },
         },
+        '/runapi': {
+          target: 'https://runapi.co',
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/runapi/, '/v1'),
+          secure: false,
+        },
       },
     },
     optimizeDeps: {
